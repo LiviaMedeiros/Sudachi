@@ -1,0 +1,33 @@
+#!/sbin/openrc-run
+# Copyright 2021-2315 Livia Medeiros
+# Distributed under the terms of the GNU General Public License v2
+
+me="sudachi"
+py="/usr/bin/python"
+fumudir="/home/${me}/discord"
+fumufile="sudachi.py"
+pidfile="/var/run/${SVCNAME}.pid"
+
+depend() {
+	use net
+}
+
+start() {
+	ebegin "Starting Sudachi FM"
+	start-stop-daemon --start \
+		--chdir "${fumudir}" \
+		--user "${me}" \
+		--background -m \
+		--pidfile "${pidfile}" \
+		--exec ${py} -- ${fumufile}
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping Sudachi FM"
+	start-stop-daemon --stop \
+		--chdir "${fumudir}" \
+		--user "${me}" \
+		--pidfile "${pidfile}"
+	eend $?
+}
