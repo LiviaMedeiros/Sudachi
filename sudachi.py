@@ -174,6 +174,11 @@ class Sudachi(discord.Client):
         self.playqueue = self.bgmlist(*m)
         await self.play_hca(message)
 
+    async def _repeat(self, message, m):
+        await self.join_voice(message)
+        self.playqueue = self.bgmlist(*m[1:])
+        await self.play_hca(message, m[0])
+
     async def _shuffle(self, message, m):
         await self.join_voice(message)
         self.playqueue = self.bgmlist(*m)
@@ -184,7 +189,7 @@ class Sudachi(discord.Client):
         if not self.playqueue:
             return
         for i, q in enumerate(self.playqueue):
-            await message.channel.send(f'`{i}. {q}`')
+            await message.channel.send(f"`{i}. {q}`")
 
     async def _skip(self, message, m = None):
         self.plea_skip = True
@@ -212,11 +217,13 @@ class Sudachi(discord.Client):
         for name, (rexp, action, delmsg) in {
             'come': (r'come', self._come, True),
             'leave': (r'leave', self._leave, True),
-            'volume': (r'volume ([0-9]+)', self._volume, True,),
+            'volume': (r'volume[\s]*([0-9]+)', self._volume, True,),
             'list0': (r'list', self._list0, False),
-            'list1': (r'list ([\d]+)', self._list1, False),
-            'list2': (r'list ([\d]+) ([^\s]+)', self._list2, False),
+            'list1': (r'list[\s]*([\d]+)', self._list1, False),
+            'list2': (r'list[\s]*([\d]+) ([^\s]+)', self._list2, False),
             'play': (r'play[\s]*([^\s]*)[\s]*([^\s]*)[\s]*([^\s]*)', self._play, False),
+            'repeat': (r'repeat[\s]*([1-9][0-9]*)[\s]+([^\s]+)[\s]+([^\s]+)[\s]+([^\s]+)', self._repeat, False),
+            'shuffle': (r'shuffle[\s]*([^\s]*)[\s]*([^\s]*)[\s]*([^\s]*)', self._shuffle, False),
             'show': (r'show', self._show, False),
             'skip': (r'skip', self._skip, True),
             'pause': (r'pause', self._pause, True),
