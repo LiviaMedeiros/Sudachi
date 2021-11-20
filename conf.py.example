@@ -1,0 +1,28 @@
+import glob
+import re
+import collections
+bgm = collections.defaultdict(lambda: collections.defaultdict(list))
+bgmprefix = '/SNAA/resource/sound_native/bgm/bgm'
+for f in glob.glob(rf"{bgmprefix}*.hca"):
+    m = re.match(fr"{bgmprefix}([^_]+)_([^_\d]+)(.+)_hca.hca", f).groups()
+    bgm[m[0]][m[1]].append(m[2])
+bgm = {k: dict(v) for k, v in bgm.items()}
+
+fumu = {
+    'token': 'BTMwLFT4NjE4LVMdRzU0NTX3.YXX-Zr.PLZmHrX5XYoSdCHZEyDz9pzDMbs',
+    'name': 'Sudachi FM',
+    'id': 111111111111111111,
+    'safeword': "FUMU",
+    'vgmcli': '/usr/bin/vgmstream-cli',
+    'bgmprefix': bgmprefix,
+    'bgm': bgm,
+    'dir': {
+        'img': 'fumu/img',
+        'log': 'fumu/log',
+    },
+    'logexc_start': ('Voice websocket frame received: %s', '=+='),
+    'logexc_any': ["{'t': None, 's': None, 'op': 11, 'd': None}"],
+    'callings': ('SudachiFM', '<@!111111111111111111>'),
+    'debugger': 222222222222222222,
+    'debugchannel': 333333333333333333
+}
