@@ -141,9 +141,13 @@ class Sudachi(discord.Client):
     async def on_ready(self):
         self.init_logger()
         self.init_pleas()
+        await self.fumulog('info_nods', f"discord.py {discord.__version__}")
         await self.fumulog('info_nods', f"{self.user.name}@{self.user.id}")
-        await self.change_presence(status = discord.Status.online, activity = discord.Activity(name = 'ふむむむ', type = 2))
+        await self.change_presence(status = discord.Status.online, activity = discord.Activity(name = 'ふむむむ', type = discord.ActivityType.listening))
         await self.fumulog('info_nods', '===FUMU===')
+
+    async def _latency(self, message, m = None):
+        await message.channel.send(f"`{self.latency}`")
 
     async def _come(self, message, m = None):
         await self.join_voice(message)
@@ -216,6 +220,7 @@ class Sudachi(discord.Client):
         self._pleas = [
         (name, re.compile(fr"{rexp}[\s]*"), action, delmsg)
         for name, (rexp, action, delmsg) in {
+            'latency': (r'latency', self._latency, True),
             'come': (r'come', self._come, True),
             'leave': (r'leave', self._leave, True),
             'volume': (r'volume[\s]*([0-9]+)', self._volume, True,),
