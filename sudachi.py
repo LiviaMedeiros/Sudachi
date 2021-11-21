@@ -194,6 +194,9 @@ class Sudachi(discord.Client):
         random.shuffle(self.playqueue)
         await self.play_hca(message)
 
+    async def _bgm(self, message, m = None):
+        await self._repeat(message, ('99', '23', 'puella', '02'))
+
     async def _show(self, message, m = None):
         if not self.playqueue:
             return
@@ -234,6 +237,7 @@ class Sudachi(discord.Client):
             'play': (r'play[\s]*([^\s]*)[\s]*([^\s]*)[\s]*([^\s]*)', self._play, False),
             'repeat': (r'repeat[\s]*([1-9][0-9]*)[\s]+([^\s]+)[\s]+([^\s]+)[\s]+([^\s]+)', self._repeat, False),
             'shuffle': (r'shuffle[\s]*([^\s]*)[\s]*([^\s]*)[\s]*([^\s]*)', self._shuffle, False),
+            'bgm': (r'bgm', self._bgm, True),
             'show': (r'show', self._show, False),
             'skip': (r'skip', self._skip, True),
             'pause': (r'pause', self._pause, True),
