@@ -112,6 +112,8 @@ class Sudachi(discord.Client):
 
 
     async def play_hca(self, message, repeats = 0):
+        self.plea_stop = False
+        self.plea_skip = False
         if not repeats:
             repeats = self.repeats
         while self.playqueue and (keys := self.playqueue.pop(0)):
@@ -255,7 +257,7 @@ class Sudachi(discord.Client):
         for name, rexpc, action, delmsg in self._pleas:
             if m := rexpc.fullmatch(plea):
                 await self.fumulog('info', f"PLEA {name}")
-                if delmsg:
+                if delmsg and not isinstance(message.channel, discord.channel.DMChannel):
                     await message.delete()
                 return await action(message, m.groups())
 
