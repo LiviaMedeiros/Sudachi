@@ -142,7 +142,7 @@ class Sudachi(discord.Client):
         self.init_logger()
         self.init_pleas()
         await self.fumulog('info_nods', f"discord.py {discord.__version__}")
-        await self.fumulog('info_nods', f"{self.user.name}@{self.user.id}")
+        await self.fumulog('info_nods', f"{self.user.name}#{self.user.discriminator}@{self.user.id}")
         await self.change_presence(status = discord.Status.online, activity = discord.Activity(name = 'ふむむむ', type = discord.ActivityType.listening))
         await self.fumulog('info_nods', '===FUMU===')
 
