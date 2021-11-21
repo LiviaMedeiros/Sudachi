@@ -14,16 +14,16 @@ class FumuLogHandler(logging.Handler):
     dt = None
     def emit(self, record):
         msg = self.format(record)
-        if hasattr(record.msg, 'startswith') and record.msg.startswith(fumu['logexc_start']):
+        if 'logexc_start' in fumu and hasattr(record.msg, 'startswith') and record.msg.startswith(fumu['logexc_start']):
             return
-        if any(exc in msg for exc in fumu['logexc_any']):
+        if 'logexc_any' in fumu and any(exc in msg for exc in fumu['logexc_any']):
             return
         msg = discord.utils.escape_markdown(msg)
         if record.levelno == logging.DEBUG:
             msg = f"||{msg}||"
         elif record.levelno > logging.DEBUG:
             msg = f"```{msg}```"
-            if record.levelno > logging.INFO:
+            if 'debugger' in fumu and record.levelno > logging.INFO:
                 msg = '<@'+str(fumu['debugger'])+'> '+msg
         try:
             asyncio.get_event_loop().create_task(self.dt.get_channel(fumu['debugchannel']).send(msg))
@@ -106,6 +106,7 @@ class Sudachi(discord.Client):
 
         if fumu['debugchannel']:
             mh = FumuLogHandler()
+            mh.setLevel(fumu.get('debuglevel', logging.DEBUG))
             mh.dt = self
             self.logger.addHandler(mh)
 
