@@ -42,7 +42,7 @@ class Sudachi(discord.Client):
     plea_stop: bool = False
     plea_skip: bool = False
 
-    async def fumulog(self, lvl, str):
+    async def fumulog(self, lvl: str, str: str):
         if lvl == 'none':
             return
         if lvl == 'warning':
@@ -66,10 +66,10 @@ class Sudachi(discord.Client):
         await self.vc.move_to(message.author.voice.channel)
         return True
 
-    def bgmfile(self, key1, key2, key3):
+    def bgmfile(self, key1: str, key2: str, key3: str) -> str:
         return fumu['bgmprefix'] + key1 + '_' + key2 + key3 + '_hca.hca'
 
-    def bgmlist(self, r1 = None, r2 = None, r3 = None):
+    def bgmlist(self, r1: str = None, r2: str = None, r3: str = None) -> list:
         if not r1:
             return [(k1, k2, v3) for k1, v1 in fumu['bgm'].items() for k2, v2 in v1.items() for v3 in v2]
         if not r2:
@@ -80,7 +80,7 @@ class Sudachi(discord.Client):
             return [(r1, r2, r3)]
         return []
 
-    def make_player(self, keys, repeats):
+    def make_player(self, keys: tuple, repeats: int):
         bgmfile = self.bgmfile(*keys)
         return discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(subprocess.Popen((
             fumu['vgmcli'],
@@ -111,7 +111,7 @@ class Sudachi(discord.Client):
             self.logger.addHandler(mh)
 
 
-    async def play_hca(self, message, repeats = 0):
+    async def play_hca(self, message, repeats: int = 0):
         self.plea_stop = False
         self.plea_skip = False
         if not repeats:
