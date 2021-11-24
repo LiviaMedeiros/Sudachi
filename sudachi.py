@@ -186,7 +186,7 @@ class Sudachi(discord.Client):
     async def _repeat(self, message, m):
         await self.join_voice(message)
         self.playqueue = self.bgmlist(*m[1:])
-        await self.play_hca(message, m[0])
+        await self.play_hca(message, int(m[0]))
 
     async def _shuffle(self, message, m):
         await self.join_voice(message)
