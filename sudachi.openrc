@@ -25,8 +25,8 @@ checkconfig() {
 
 start_pre() {
 	[ "${RC_CMD}" = "restart" ] || checkconfig || return $?
-	rm -f "${fumudir}/${fumupipe}"
-	mkfifo "${fumudir}/${fumupipe}"
+	[ -p "${fumudir}/${fumupipe}" ] && rm --force "${fumudir}/${fumupipe}"
+	[ -f "${fumudir}/${fumupipe}" ] || mkfifo "${fumudir}/${fumupipe}"
 	chown "${me}" "${fumudir}/${fumupipe}"
 	chmod 600 "${fumudir}/${fumupipe}"
 }
@@ -36,7 +36,8 @@ stop_pre() {
 }
 
 stop_post() {
-	rm -f "${fumudir}/${fumupipe}"
+	[ -p "${fumudir}/${fumupipe}" ] && rm --force "${fumudir}/${fumupipe}"
+	eend 0
 }
 
 info() {
