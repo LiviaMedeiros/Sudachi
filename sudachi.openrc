@@ -2,14 +2,31 @@
 # Copyright 2021-2315 Livia Medeiros
 # Distributed under the terms of the GNU General Public License v2
 
+extra_commands="checkconfig"
+
 me="sudachi"
 py="/usr/bin/python"
 fumudir="/home/${me}/discord"
 fumufile="sudachi.py"
-pidfile="/var/run/${SVCNAME}.pid"
+conffile="conf.py"
+pidfile="/var/run/${RC_SVCNAME}.pid"
 
 depend() {
 	use net
+}
+
+checkconfig() {
+	ebegin "Checking configuration"
+	[ -f "${fumudir}/${conffile}" ]
+	eend $? "${conffile} not found!"
+}
+
+start_pre() {
+	[ "${RC_CMD}" = "restart" ] || checkconfig || return $?
+}
+
+stop_pre() {
+	[ "${RC_CMD}" != "restart" ] || checkconfig || return $?
 }
 
 start() {
