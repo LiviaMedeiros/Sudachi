@@ -3,10 +3,12 @@
 # Distributed under the terms of the GNU General Public License v2
 
 extra_commands="checkconfig"
+extra_started_commands="info"
 
 me="sudachi"
 py="/usr/bin/python"
 fumudir="/home/${me}/discord"
+fumupipe="sudachi.pipe"
 fumufile="sudachi.py"
 conffile="conf.py"
 pidfile="/var/run/${RC_SVCNAME}.pid"
@@ -23,10 +25,23 @@ checkconfig() {
 
 start_pre() {
 	[ "${RC_CMD}" = "restart" ] || checkconfig || return $?
+	rm -f "${fumudir}/${fumupipe}"
+	mkfifo "${fumudir}/${fumupipe}"
+	chown "${me}" "${fumudir}/${fumupipe}"
+	chmod 600 "${fumudir}/${fumupipe}"
 }
 
 stop_pre() {
 	[ "${RC_CMD}" != "restart" ] || checkconfig || return $?
+}
+
+stop_post() {
+	rm -f "${fumudir}/${fumupipe}"
+}
+
+info() {
+	start-stop-daemon --signal USR1 --pidfile "${pidfile}"
+	cat "${fumudir}/${fumupipe}"
 }
 
 start() {
@@ -34,7 +49,8 @@ start() {
 	start-stop-daemon --start \
 		--chdir "${fumudir}" \
 		--user "${me}" \
-		--background -m \
+		--background \
+		--make-pidfile \
 		--pidfile "${pidfile}" \
 		--exec ${py} -- ${fumufile}
 	eend $?

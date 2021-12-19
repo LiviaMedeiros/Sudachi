@@ -5,6 +5,7 @@ import subprocess
 import asyncio
 import logging
 import random
+import os
 
 from conf import fumu
 import sys
@@ -267,5 +268,38 @@ class Sudachi(discord.Client):
                     await message.delete()
                 return await action(message, m.groups())
 
+sudachi = Sudachi()
 
-Sudachi().run(fumu['token'])
+if __name__ == '__main__':
+    if 'RC_SERVICE' in os.environ:
+        import signal
+        import aiofiles
+        import yaml
+
+        async def infodump():
+            application_info = await sudachi.application_info()
+            async with aiofiles.open('sudachi.pipe', 'w') as f:
+                await f.write(yaml.dump({
+                    'latency': sudachi.latency,
+                    'app': {
+                        'id': application_info.id,
+                        'name': application_info.name,
+                        'desc': application_info.description,
+                        'owner': {
+                            'id': application_info.owner.id,
+                            'name': application_info.owner.name
+                        },
+                        'slug': application_info.slug,
+                        'summary': application_info.summary,
+                        'team': application_info.team
+                    },
+                    'user': {
+                        'id': sudachi.user.id,
+                        'name': sudachi.user.name,
+                        'verified': sudachi.user.verified
+                    }
+                }, allow_unicode = True))
+
+        asyncio.get_event_loop().add_signal_handler(signal.SIGUSR1, lambda: asyncio.ensure_future(infodump()))
+
+    sudachi.run(fumu['token'])
